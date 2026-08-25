@@ -1,0 +1,44 @@
+# Default Headscale configuration.
+#
+# This file is baked into the image at /config/config.yaml so the server can
+# start out of the box. Override it by mounting your own config:
+#   --mount type=bind,source=/path/to/config,target=/config
+#
+# See the official sample configuration for the full set of options:
+# https://github.com/juanfont/headscale/blob/main/config-example.yaml
+
+# The URL clients will connect to. Must be publicly reachable (https recommended).
+server_url: http://127.0.0.1:8080
+
+# Address to listen on. 0.0.0.0 so the container is reachable from outside.
+listen_addr: 0.0.0.0:8080
+
+# Noise protocol (Tailscale v2) private key. A missing key is generated on first start.
+noise:
+  private_key_path: /var/lib/headscale/noise_private.key
+
+# IP prefixes to allocate tailnet addresses from (standard Tailscale ranges).
+prefixes:
+  v4: 100.64.0.0/10
+  v6: fd7a:115c:a1e0::/48
+
+# SQLite database.
+database:
+  type: sqlite
+  sqlite:
+    path: /var/lib/headscale/db.sqlite
+
+# DERP relay map. Fetched from the Tailscale control plane at startup.
+derp:
+  urls:
+    - https://controlplane.tailscale.com/derpmap/default
+
+# DNS / MagicDNS. base_domain must differ from the server_url domain.
+dns:
+  magic_dns: true
+  base_domain: example.com
+  override_local_dns: true
+  nameservers:
+    global:
+      - 1.1.1.1
+      - 1.0.0.1
