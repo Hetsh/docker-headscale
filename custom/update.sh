@@ -4,10 +4,7 @@
 # This file will be sourced by scripts/update.sh to customize the update process
 
 
+IMG_NAME="hetsh/headscale"
 IMG_VERSION="$(git describe --tags --first-parent --abbrev=0)"
-MAIN_ITEM="APP_VERSION"
-function check_for_updates {
-	update_base_image "\\d{8}-\\d+"
-	update_packages "hetsh/headscale"
-	update_github "juanfont/headscale" "APP_VERSION" "(\d+\.)*\d+" "Headscale"
-}
+BASE_IMAGE_VERSION_REGEX="\\d{8}-\\d+"
+MAIN_ITEM="headscale"
