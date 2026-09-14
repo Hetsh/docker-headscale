@@ -7,10 +7,12 @@ RUN apk upgrade --no-cache && \
 
 ARG APP_USER="headscale"
 ARG APP_GROUP="$APP_USER"
-ARG APP_UID="1378"
-ARG APP_GID="$APP_UID"
-RUN groupmod --gid "$APP_GID" "$APP_GROUP" && \
-	usermod --uid "$APP_UID" "$APP_USER"
+ARG NEW_UID="1378"
+ARG NEW_GID="$NEW_UID"
+ARG OLD_UID="101"
+ARG OLD_GID="102"
+RUN sed -i "s/:$OLD_UID:$OLD_GID:/:$NEW_UID:$NEW_GID:/" "/etc/passwd" && \
+	sed -i "s/:$OLD_GID/:$NEW_GID:/" "/etc/group"
 
 ARG RUN_DIR="/run/headscale"
 ARG DATA_DIR="/var/lib/headscale"
@@ -18,6 +20,7 @@ RUN mkdir \
 		"$RUN_DIR" \
 		"$DATA_DIR" && \
 	chown -R "$APP_USER:$APP_GROUP" \
+		"/var/lib/headscale" \
 		"$RUN_DIR" \
 		"$DATA_DIR"
 
