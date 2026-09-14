@@ -6,18 +6,14 @@ Headscale needs to be configured first.
 Use the [official documentation](https://headscale.net/stable/getting-started/) and the [sample configuration](https://github.com/juanfont/headscale/blob/main/config-example.yaml) to get started.
 Note that `server_url` must be publicly reachable (https recommended).
 
-This image starts `headscale` with parameters `serve --config /config/config.yaml`.
-However, you can override them:
-```bash
-docker run ... hetsh/headscale <command> <parameters>
-```
-
+The image runs `headscale serve` by default, which reads its configuration from `/etc/headscale/config.yaml`.
+To use your own configuration, mount it over that path — no extra parameters required.
 ```bash
 docker run \
     --detach \
     --name headscale \
     --publish 8080:8080/tcp \
-    --mount type=bind,source=/path/to/config,target=/config \
+    --mount type=bind,source=/path/to/config.yaml,target=/etc/headscale/config.yaml \
     --mount type=bind,source=/path/to/data,target=/var/lib/headscale \
     hetsh/headscale
 ```
@@ -33,20 +29,18 @@ docker stop headscale
 ```
 
 ## Creating persistent storage
+The server runs as the unprivileged user `headscale` (uid/gid `1378`, see Dockerfile).
+Create the data directory and give that user write access:
 ```bash
-CONFIG="/path/to/config"
 DATA="/path/to/data"
-mkdir -p "$CONFIG" "$DATA"
-chown 1378:1378 "$CONFIG" "$DATA"
+mkdir -p "$DATA"
+chown 1378:1378 "$DATA"
 ```
-`1378` is the numerical id of the user running the server (see Dockerfile).
-The user must have RW access to these directories.
-The config directory must contain the `config.yaml` file.
+The user must have RW access to this directory.
 The data directory will hold the SQLite database and the Noise private key.
-Start the server with the additional mount flags:
+Start the server with the additional mount flag:
 ```bash
 docker run \
-    --mount type=bind,source=/path/to/config,target=/config \
     --mount type=bind,source=/path/to/data,target=/var/lib/headscale \
     ...
 ```
@@ -55,12 +49,12 @@ docker run \
 The `headscale` CLI talks to the running server over its unix socket (created at `/var/run/headscale/headscale.sock` by default).
 Run CLI commands inside the container:
 ```bash
-docker exec -it headscale headscale --config /config/config.yaml users list
+docker exec -it headscale headscale users list
 ```
 Create a user and a preauth key for it:
 ```bash
-docker exec -it headscale headscale --config /config/config.yaml users create myuser
-docker exec -it headscale headscale --config /config/config.yaml preauthkeys create --user 1
+docker exec -it headscale headscale users create myuser
+docker exec -it headscale headscale preauthkeys create --user 1
 ```
 
 ## Time
