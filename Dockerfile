@@ -7,6 +7,11 @@ RUN apk upgrade --no-cache && \
 
 ARG APP_USER="headscale"
 ARG APP_GROUP="$APP_USER"
+ARG APP_UID="1378"
+ARG APP_GID="$APP_UID"
+RUN groupmod --gid "$APP_GID" "$APP_GROUP" && \
+	usermod --uid "$APP_UID" "$APP_USER"
+
 ARG RUN_DIR="/run/headscale"
 ARG DATA_DIR="/var/lib/headscale"
 RUN mkdir \
