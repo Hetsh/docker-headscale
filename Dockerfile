@@ -1,4 +1,4 @@
-FROM hetsh/alpine:20260805-3
+FROM hetsh/alpine:20260805-4
 ARG LAST_UPGRADE="2026-08-09T09:22:09+02:00"
 RUN apk upgrade --no-cache && \
 	apk add --no-cache \
