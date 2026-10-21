@@ -1,8 +1,8 @@
-FROM hetsh/alpine:20260805-8
-ARG LAST_UPGRADE="2026-10-11T21:48:46+02:00"
+FROM hetsh/alpine:20260805-9
+ARG LAST_UPGRADE="2026-10-21T20:51:38+02:00"
 RUN apk upgrade --no-cache && \
 	apk add --no-cache \
-		ca-certificates=20260909-r0 \
+		ca-certificates=20261020-r0 \
 		headscale=0.29.3-r0
 
 ARG APP_USER="headscale"
